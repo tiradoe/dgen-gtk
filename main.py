@@ -3,7 +3,8 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 from models.roms import RomManager
-from pathlib import Path
+from views.roms import RomsView
+from views.settings import SettingsView
 
 class MainWindow(Gtk.Window):
     def __init__(self):
@@ -30,7 +31,7 @@ class MainWindow(Gtk.Window):
         self.load_css()
         self.add(main_box)
 
-        self.load_rom_view()
+        roms_view = RomsView(self)
         Gtk.Window.set_title(self,"Dgen - ROMS")
 
 
@@ -70,65 +71,16 @@ class MainWindow(Gtk.Window):
         return content_box
 
 
-    def _on_select_row(self, listbox, row):
+    def _on_select_row(main_window, listbox, row):
         if row:
             row_name = row.get_child().get_text()
-            Gtk.Window.set_title(self,"Dgen - %s" % row_name)
+            Gtk.Window.set_title(main_window,"Dgen - %s" % row_name)
 
             if row_name == "ROMS":
-                self.load_rom_view()
+                rom_view = RomsView(main_window)
 
             elif row_name == "Settings":
-                self.load_settings_view()
-
-
-    def load_rom_view(self):
-        home_path = str(Path.home())
-        rom_dir = "%s/Games/Genesis/" % home_path
-        rom_manager = RomManager()
-        row_name = "ROMS"
-
-        if rom_dir != "":
-            roms = rom_manager.getRomList(rom_dir)
-        else:
-            roms = Gtk.ListStore(str,str,str)
-
-        tree_view = Gtk.TreeView(roms)
-
-        for i, col_title in enumerate(["Title", "Publisher", "Filename"]):
-            renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(col_title, renderer, text=i)
-
-            column.set_sort_column_id(i)
-            tree_view.append_column(column)
-
-        selected_row = tree_view.get_selection()
-        rom_info = [selected_row, rom_dir]
-
-        tree_view.connect("row_activated", rom_manager.start_dgen, rom_info)
-
-        self.stack.add_named(tree_view, row_name)
-
-        tree_view.show()
-        self.stack.set_visible_child(tree_view)
-
-
-    def load_settings_view(self):
-        row_name = "Settings"
-        settings_box = Gtk.Box(
-                orientation=Gtk.Orientation.VERTICAL,
-        )
-
-        file_chooser_label = Gtk.Label("Choose ROM directory: ")
-        choose_romdir_button = Gtk.FileChooserButton()
-
-        settings_box.pack_start(file_chooser_label, True, True, 0)
-        settings_box.pack_start(choose_romdir_button, False, False, 0)
-
-        self.stack.add_named(settings_box, row_name)
-
-        settings_box.show()
-        self.stack.set_visible_child(settings_box)
+                settings_view = SettingsView(main_window)
 
 
     def load_css(self):
