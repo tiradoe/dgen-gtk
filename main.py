@@ -8,7 +8,7 @@ from views.settings import SettingsView
 
 class MainWindow(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title="Dgen")
+        Gtk.Window.__init__(self)
 
         if Gdk.Screen.get_default().get_height() < 800:
             self.maximize()
@@ -16,71 +16,47 @@ class MainWindow(Gtk.Window):
             self.set_size_request(950, 700)
 
         main_box = Gtk.Box(
-                orientation=Gtk.Orientation.HORIZONTAL,
+                orientation=Gtk.Orientation.VERTICAL,
         )
-        left_sidebar = self.sidebar()
-        separator = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
+
+        rom_view = RomsView().generate_view()
+        settings_view = SettingsView().generate_view()
+
         content_window = self.content_window()
+        content_window.add_titled(rom_view, "rom_view", "ROMS")
+        content_window.add_titled(settings_view, "settings_view", "Settings")
 
-        left_sidebar.get_style_context().add_class("bg")
+        header_bar = self.header_bar(content_window)
+        self.set_titlebar(header_bar)
 
-        main_box.pack_start(left_sidebar, False, False, 0)
-        main_box.pack_start(separator, False, False, 0)
+
         main_box.pack_start(content_window, True, True, 0)
 
-        self.load_css()
-        self.add(main_box)
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.add(main_box)
 
-        roms_view = RomsView(self)
-        Gtk.Window.set_title(self,"Dgen - ROMS")
+        self.add(scrolled_window)
 
 
-    def sidebar(self):
-        left_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+    def header_bar(self, content_window):
+        tab_switcher = Gtk.StackSwitcher(can_focus=False, halign="center")
+        tab_switcher.set_stack(content_window)
 
-        self.listbox = Gtk.ListBox()
-        self.listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
-        self.listbox.connect("row_activated", self._on_select_row)
+        header_bar = Gtk.HeaderBar(title="DGen")
+        header_bar.set_show_close_button(True)
+        header_bar.pack_start(tab_switcher)
 
-        rom_manager = RomManager()
-        roms_row = Gtk.ListBoxRow(name="roms")
-        roms_label = Gtk.Label("ROMS")
-        roms_row.add(roms_label)
-        self.listbox.add(roms_row)
-        roms_row.get_style_context().add_class("side-options")
-
-        settings_row = Gtk.ListBoxRow(name="settings")
-        settings_label = Gtk.Label("Settings")
-        settings_row.add(settings_label)
-        self.listbox.add(settings_row)
-        settings_row.get_style_context().add_class("side-options")
-
-        left_box.add(self.listbox)
-
-        return left_box
+        return header_bar
 
 
     def content_window(self):
-        content_box = Gtk.ScrolledWindow()
+        #content_box = Gtk.ScrolledWindow()
+        content_box = Gtk.Stack()
 
-        self.stack = Gtk.Stack()
-        self.stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-        self.stack.set_transition_duration(500)
-        content_box.add(self.stack)
+        content_box.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+        content_box.set_transition_duration(500)
 
         return content_box
-
-
-    def _on_select_row(main_window, listbox, row):
-        if row:
-            row_name = row.get_child().get_text()
-            Gtk.Window.set_title(main_window,"Dgen - %s" % row_name)
-
-            if row_name == "ROMS":
-                rom_view = RomsView(main_window)
-
-            elif row_name == "Settings":
-                settings_view = SettingsView(main_window)
 
 
     def load_css(self):
