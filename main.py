@@ -50,11 +50,7 @@ class MainWindow(Gtk.Window):
 
 
     def content_window(self):
-        #content_box = Gtk.ScrolledWindow()
         content_box = Gtk.Stack()
-
-        content_box.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-        content_box.set_transition_duration(500)
 
         return content_box
 

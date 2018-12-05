@@ -23,6 +23,7 @@ class RomsView():
             roms = Gtk.ListStore(str,str,str)
 
         rom_list = Gtk.TreeView(roms)
+        rom_list.get_style_context().add_class("gtkview")
 
         for i, col_title in enumerate(["Title", "Publisher", "Filename"]):
             renderer = Gtk.CellRendererText()

@@ -38,7 +38,6 @@ class RomManager():
         for rom in rom_list:
             roms_list_store.append(list(rom))
 
-
         return roms_list_store
 
 
