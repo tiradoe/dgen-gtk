@@ -9,14 +9,42 @@ class SettingsView():
 
 
     def generate_view(self):
-        settings_box = Gtk.Box(
-                orientation=Gtk.Orientation.VERTICAL,
-        )
+        romdir_box = Gtk.Box()
+        fullscreen_box = Gtk.Box(spacing=50)
+        settings_grid = Gtk.Grid()
 
         file_chooser_label = Gtk.Label("Choose ROM directory: ")
         choose_romdir_button = Gtk.FileChooserButton()
 
-        settings_box.pack_start(file_chooser_label, True, True, 0)
-        settings_box.pack_start(choose_romdir_button, False, False, 0)
+        fullscreen_label = Gtk.Label("Start in fullscreen")
+        fullscreen_checkbox = Gtk.CheckButton()
 
-        return settings_box
+        romdir_box.pack_start(file_chooser_label, True, True, 0)
+        romdir_box.pack_end(choose_romdir_button, True, True, 0)
+
+        fullscreen_box.pack_start(fullscreen_label, True, True, 0)
+        fullscreen_box.pack_end(fullscreen_checkbox, True, True, 0)
+
+        settings_grid.add(romdir_box)
+        settings_grid.attach_next_to(fullscreen_box, romdir_box, Gtk.PositionType.BOTTOM,1,2)
+        settings_grid.attach_next_to(fullscreen_box, romdir_box, Gtk.PositionType.BOTTOM,1,2)
+
+
+        #settings_grid.attach_next_to(
+        #        fullscreen_label,
+        #        file_chooser_label,
+        #        Gtk.PositionType.BOTTOM,
+        #        1,
+        #        1
+        #)
+        #settings_grid.attach_next_to(
+        #        fullscreen_checkbox,
+        #        fullscreen_label,
+        #        Gtk.PositionType.RIGHT,
+        #        1,
+        #        1)
+
+
+
+
+        return settings_grid

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -39,18 +40,17 @@ class MainWindow(Gtk.Window):
 
 
     def header_bar(self, content_window):
-        tab_switcher = Gtk.StackSwitcher(can_focus=False, halign="center")
+        tab_switcher = Gtk.StackSwitcher(can_focus=False)
         tab_switcher.set_stack(content_window)
 
-        header_bar = Gtk.HeaderBar(title="DGen")
+        header_bar = Gtk.HeaderBar()
+        header_bar.set_custom_title(tab_switcher)
         header_bar.set_show_close_button(True)
-        header_bar.pack_start(tab_switcher)
 
         return header_bar
 
 
     def content_window(self):
-        #content_box = Gtk.ScrolledWindow()
         content_box = Gtk.Stack()
 
         content_box.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
